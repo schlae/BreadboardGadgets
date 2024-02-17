@@ -5,6 +5,11 @@
   )
 
   (paper "A4")
+  (title_block
+    (title "ByteSwitch")
+    (comment 1 "By Tube Time")
+  )
+
   (layers
     (0 "F.Cu" signal)
     (31 "B.Cu" signal)
@@ -750,6 +755,9 @@
   )
   (gr_text "GND" (at 142.621 115.316 -90) (layer "F.SilkS") (tstamp d5e60b8c-1514-472c-ab50-6ae2619b6b86)
     (effects (font (size 1.016 1.016) (thickness 0.1524)) (justify left bottom))
+  )
+  (gr_text "This work is licensed under the Creative Commons\nAttribute-ShareAlike 4.0 International License.\nTo view a copy of this license, visit\nhttp://creativecommons.org/license/by-sa/4.0/\nor send a letter to Creative Commons, PO Box 1866,\nMountain View, CA 94042, USA." (at 120.3 181.8) (layer "Dwgs.User") (tstamp d3f49838-35cf-4481-a9ce-690990d630b5)
+    (effects (font (size 1.27 1.27) (thickness 0.254)) (justify left))
   )
   (dimension (type aligned) (layer "Dwgs.User") (tstamp a1b3c441-a395-4bce-86a5-e3e2daed3433)
     (pts (xy 148.59 100.33) (xy 148.59 120.65))

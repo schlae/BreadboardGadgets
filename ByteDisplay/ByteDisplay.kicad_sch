@@ -703,9 +703,18 @@
     (uuid fd6ea31c-ed50-450c-8aac-91afed54565c)
   )
 
-  (text "Breadboard jumpers are 0.027\" dia\n" (at 29.21 102.87 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid a6a5b8d2-ff4b-4b1b-a1a1-d1e179d57fcf)
+  (text "This work is licensed under the Creative Commons\nAttribute-ShareAlike 4.0 International License.\nTo view a copy of this license, visit\nhttp://creativecommons.org/license/by-sa/4.0/\nor send a letter to Creative Commons, PO Box 1866,\nMountain View, CA 94042, USA."
+    (at 67.31 190.5 0)
+    (effects (font (size 2.54 2.54)) (justify left bottom))
+    (uuid 7ec590fb-f185-4413-849a-223d2eff3979)
+  )
+  (text "ByteDisplay" (at 179.07 173.99 0)
+    (effects (font (size 5.08 5.08)) (justify left bottom))
+    (uuid f571bec0-7132-4bc2-b740-f4d6a57d4096)
+  )
+  (text "By Tube Time" (at 180.34 179.07 0)
+    (effects (font (size 2.54 2.54)) (justify left bottom))
+    (uuid fa91582a-c21e-4532-a7fa-6030dc4301e3)
   )
 
   (label "5V" (at 87.63 66.04 0) (fields_autoplaced)

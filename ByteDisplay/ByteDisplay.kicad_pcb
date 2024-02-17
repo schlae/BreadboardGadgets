@@ -5,6 +5,11 @@
   )
 
   (paper "A4")
+  (title_block
+    (title "ByteDisplay")
+    (comment 1 "By Tube Time")
+  )
+
   (layers
     (0 "F.Cu" signal)
     (31 "B.Cu" signal)
@@ -1417,6 +1422,9 @@
   )
   (gr_text "LATCH" (at 142.494 108.204 -90) (layer "F.SilkS") (tstamp df066696-bec5-4570-a937-b5b87d0f1ee6)
     (effects (font (size 1.016 1.016) (thickness 0.1524)) (justify left bottom))
+  )
+  (gr_text "This work is licensed under the Creative Commons\nAttribute-ShareAlike 4.0 International License.\nTo view a copy of this license, visit\nhttp://creativecommons.org/license/by-sa/4.0/\nor send a letter to Creative Commons, PO Box 1866,\nMountain View, CA 94042, USA." (at 119.9 181.4) (layer "Dwgs.User") (tstamp 187c8d73-6b8c-4439-b133-0a014c8ab92f)
+    (effects (font (size 1.27 1.27) (thickness 0.254)) (justify left))
   )
   (dimension (type aligned) (layer "Dwgs.User") (tstamp a1b3c441-a395-4bce-86a5-e3e2daed3433)
     (pts (xy 148.59 100.33) (xy 148.59 120.65))

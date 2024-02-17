@@ -783,6 +783,20 @@
     (uuid ff1fc16d-9fb0-42e0-9870-cec35dfc572c)
   )
 
+  (text "By Tube Time" (at 180.34 179.07 0)
+    (effects (font (size 2.54 2.54)) (justify left bottom))
+    (uuid 6ac3b2cc-e630-4bc5-9ff0-8a1e91978e1c)
+  )
+  (text "ByteSwitch" (at 179.07 173.99 0)
+    (effects (font (size 5.08 5.08)) (justify left bottom))
+    (uuid 9872a357-903f-4e50-a50d-819239a2d49a)
+  )
+  (text "This work is licensed under the Creative Commons\nAttribute-ShareAlike 4.0 International License.\nTo view a copy of this license, visit\nhttp://creativecommons.org/license/by-sa/4.0/\nor send a letter to Creative Commons, PO Box 1866,\nMountain View, CA 94042, USA."
+    (at 67.31 190.5 0)
+    (effects (font (size 2.54 2.54)) (justify left bottom))
+    (uuid dcc3a191-b919-4ea8-b04e-262110a34600)
+  )
+
   (symbol (lib_id "Device:R_Small_US") (at 95.25 97.79 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 19f869ef-faad-4958-9e53-0e591f972ae1)
