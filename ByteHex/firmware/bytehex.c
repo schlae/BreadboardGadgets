@@ -57,6 +57,7 @@ volatile bool triggered = false;
 volatile uint8_t dpoints = 0;
 volatile uint8_t trig_oneshot = 0;
 
+// Pin change interrupt for trigger/latch input
 ISR (PCINT3_vect)
 {
     bool pin_state = PINE & _BV(LATCH);
@@ -73,9 +74,10 @@ ISR (PCINT3_vect)
     }
 }
 
+// Puts a digit on the 7-segment display
 void load_digit(uint8_t val, uint8_t anode)
 {
-    uint8_t d = ~digit_table[val]; // Invert bits
+    uint8_t d = ~digit_table[val]; // Invert bits since LED on when 0
     uint8_t t;
     uint8_t dpoint;
 
@@ -140,7 +142,6 @@ int main (void)
             }
         }
 
-//        dpoints = (PINE >> LATCH) & 1;// ? 1 : 0;
 
         // Check for trigger one-shot
         if (trig_oneshot > 0) {

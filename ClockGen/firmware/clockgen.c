@@ -19,7 +19,10 @@
 #define C_DP 1 // PC
 #define C_B 0 // PC
 
-#define GET_AVG(v) ((v + 16) >> 5)
+// Averaging filter for removing ADC noise
+#define FILT_BITS (5)    // Number of fixed point fractional bits
+#define AVG_FILT(input, output)  output = (output - (output >> FILT_BITS) + (input))
+#define GET_AVG(v) ((v + _BV(FILT_BITS) / 2) >> FILT_BITS) // Rounds up
 
 //   AAA       DDD
 //  F   B     C   E
@@ -49,15 +52,13 @@ uint8_t digit_table[] = { 0x9F, 0x90, 0x5E, 0xDC,
                           0xDF, 0xDD, 0xDB, 0xC7,
                           0x0F, 0xD6, 0x4F, 0x4B };
 
-volatile uint8_t current_data;
-volatile uint8_t dpoints = 0;
+uint8_t dpoints = 0;
 
-volatile uint8_t adc_chan = 0;
-volatile uint16_t val_duty = 0;
-volatile uint16_t val_freq = 0;
+uint8_t adc_chan = 0;
+uint16_t val_duty = 0;
+uint16_t val_freq = 0;
 volatile uint16_t val_vref = 0;
-volatile uint16_t val_vcc = 0;
-volatile uint8_t val_range = 0;
+uint8_t val_range = 0;
 
 volatile uint16_t val_actual_freq = 0;
 volatile uint16_t val_actual_duty = 0;
@@ -68,7 +69,9 @@ uint8_t disp_duty = 0;
 #define DUTY_DISP_TIME 200
 volatile uint16_t duty_disp_timer = 0;
 
-#define VREF_TH (0x3E) // 255 * 1.1 / 4.5
+#define BANDGAP_VOLTAGE (1.1)
+#define VCC_THRESHOLD (4.5)
+#define VREF_TH ((int)(255.0 * BANDGAP_VOLTAGE / VCC_THRESHOLD))
 #define RESET_DELAY 250
 uint16_t reset_delay = 0;
 
@@ -91,15 +94,18 @@ uint8_t get_range()
         case 0x7:
             val_range = 3;
             break;
-        default: // Don't update if we are between choices
+        default:
+            // Physical rotary switch goes to 0xF in between detents
+            // So just ignore that and use the previous setting.
             break;
     }
     return val_range;
 }
 
+// Puts a digit on the 7-segment display
 void load_digit(uint8_t val, uint8_t anode)
 {
-    uint8_t d = ~digit_table[val]; // Invert bits
+    uint8_t d = ~digit_table[val]; // Invert bits since LED on when 0
     uint8_t dpoint;
 
     dpoint = (dpoints >> (anode - 1)) & 1;
@@ -132,7 +138,7 @@ ISR(ADC_vect)
 {
     switch (adc_chan) {
         case 0x6: // Duty cycle
-            val_duty = val_duty - (val_duty >> 5) + (255 - ADCH);
+            AVG_FILT(255 - ADCH, val_duty);
             adc_set_chan(0x7);
             val_actual_duty = (GET_AVG(val_duty));
             if (val_actual_duty != val_actual_duty_old) {
@@ -141,13 +147,14 @@ ISR(ADC_vect)
             }
             break;
         case 0x7: // Frequency
-            val_freq = val_freq - (val_freq >> 5) + (255 - ADCH);
+            AVG_FILT(255 - ADCH, val_freq);
             adc_set_chan(0xe);
-            val_actual_freq = (GET_AVG(val_freq) * 100L) >> 8;
+            // Ensure there is no 0, since 0 Hz makes no sense
+            val_actual_freq = ((GET_AVG(val_freq) * 99L) >> 8) + 1;
             break;
         default:
-        case 0xe:
-            val_vref = val_vref - (val_vref >> 5) + ADCH;
+        case 0xe: // Internal bandgap reference voltage
+            AVG_FILT(ADCH, val_vref);
             adc_set_chan(0x6);
             break;
     }
@@ -160,7 +167,7 @@ void do_supervisor()
 {
     uint16_t vref = GET_AVG(val_vref);
     if (vref < VREF_TH) {
-    //  Exit reset
+        //  Exit reset
         reset_delay++;
         if (reset_delay > RESET_DELAY) {
             reset_delay = RESET_DELAY;
@@ -168,18 +175,16 @@ void do_supervisor()
             dpoints = 0;
         }
     } else {
-    //  Enter reset
+        //  Enter reset
         PORTD = _BV(1) | _BV(3);
         dpoints = 1;
     }
-
-    // TODO: Check state of pin, generate correct reset pulse
 
 }
 
 // Prescaler ranges are 256, 8, 1, 1
 uint8_t ranges[] = {4, 2, 1, 1};
-uint16_t prescale[] = {256, 8, 1, 1};
+uint32_t prescale[] = {256, 8, 1, 1};
 uint32_t frange[] = {1, 100, 1000, 10000};
 
 // Calculate PWM parameters and update hardware timer
@@ -189,12 +194,12 @@ void update_timer()
     uint32_t regval;
 
     // Calculate desired register value
-    freq = val_actual_freq * frange[val_range] * prescale[val_range];
-    regval = 8000000L / freq;
+    freq = (uint32_t)val_actual_freq * frange[val_range] * prescale[val_range];
+    regval = (F_CPU / freq) - 1;
     if (regval > 65535) regval = 65535;
 
     // Display the real value
-    disp_freq = (8000000L / (prescale[val_range] * regval)) / frange[val_range];
+    disp_freq = (F_CPU / (prescale[val_range] * (regval + 1))) / frange[val_range];
 
     // Setup prescaler
     TCCR3B = (TCCR3B & 0xF8) | ranges[val_range];
@@ -202,16 +207,16 @@ void update_timer()
     OCR3A = regval * val_actual_duty / 256;
 
     // Displayed duty cycle
-    disp_duty = ((OCR3A + 1) * 100L) / regval;
+    disp_duty = ((OCR3A + 1) * 100L) / (regval + 1);
 }
 
 int main (void)
 {
-    uint16_t temp;
+    uint16_t displayval;
+
     // Set up IO ports
     DDRD = 0x0B; // Output for clk, reset, resetdrv. In for resetsense
     PORTD = 0x0A; // RESET is high, RESET# is low
-
     DDRB = 0x0F; // Output for LED cathode drivers
     PORTB = 0xC0; // Pullup on PB6, PB7
     DDRC = 0x3F; // Output for LED cathode and anode drivers
@@ -238,13 +243,13 @@ int main (void)
 
         if (duty_disp_timer > 0) {
             duty_disp_timer--;
-            temp = bin2bcd(disp_duty);
+            displayval = bin2bcd(disp_duty);
         } else {
-            temp = bin2bcd(disp_freq);
+            displayval = bin2bcd(disp_freq);
         }
-        load_digit(temp & 0x0F, 1);
+        load_digit(displayval & 0x0F, 1);
         _delay_ms(1);
-        load_digit(temp >> 4, 2);
+        load_digit(displayval >> 4, 2);
         _delay_ms(1);
     }
     return 0;
