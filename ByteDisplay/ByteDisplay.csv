@@ -1,0 +1,15 @@
+"Source:","C:\Data\Projects\BreadboardGadgets\ByteDisplay\ByteDisplay.kicad_sch"
+"Date:","2/17/2024 11:19:47 AM"
+"Tool:","Eeschema 7.0.8"
+"Generator:","C:\Program Files\KiCad\7.0\bin\scripting\plugins/bom_csv_grouped_by_value.py"
+"Component Count:","22"
+
+"Collated Components:"
+
+"Item","Qty","Reference(s)","Value","LibPart","Footprint","Datasheet","DNP","Mouser"
+"1","8","D1, D2, D3, D4, D5, D6, D7, D8","LED_Small_Filled","Device:LED_Small_Filled","Active:LEDM3216X110","~","","859-LTST-C150AKT"
+"2","1","J1","Conn_01x08_Pin","Connector:Conn_01x08_Pin","Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical","~","",""
+"3","3","J2, J3, J4","Conn_01x01_Socket","Connector:Conn_01x01_Socket","Conn:MILL-MAX_0294-0-15-01-06-27-10-0","~","",""
+"4","1","R1","4.7K","Device:R_Small_US","Passive:RESC3216X70","~","",""
+"5","8","R2, R3, R4, R5, R6, R7, R8, R9","1K","Device:R_Small_US","Passive:RESC3216X70","~","",""
+"6","1","U1","74HCT573","74xx:74LS573","Active:SOP127P1065X265-20","74xx/74hc573.pdf","","595-SN74HCT573DWR"
